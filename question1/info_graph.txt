@@ -1,0 +1,3 @@
+Número de vérices: 5
+Número de arestas: 5.0
+Sequência de graus: [1, 1, 2, 2, 4]

@@ -1,5 +1,5 @@
 from queue import Queue, Empty
-from typing import List
+from typing import Dict, List
 from enum import Enum
 
 
@@ -11,22 +11,15 @@ class ColorVertex(Enum):
 
 class Graph:
     def __init__(self):
-        self.vertexes: List[Vertex] = []  # Store the vertexes.
+        self.vertexes: Dict = {}  # Store the vertexes.
         self.queue: Queue = Queue()
         self.time = 0
 
-    def add_vertex(self, vertex: "Vertex") -> "Vertex":
-        if not self.is_contains(vertex):
-            self.vertexes.append(vertex)
+    def add_vertex(self, key) -> "Vertex":
+        if not (key in self.vertexes.keys()):
+            self.vertexes[key] = Vertex()
 
-        return self.vertexes[self.vertexes.index(vertex)]
-
-    def is_contains(self, vertex: "Vertex"):
-        for o in self.vertexes:
-            if o.value == vertex.value:
-                return True
-
-        return False
+        return self.vertexes[key]
 
     def clear_queue(self):
         while not self.queue.empty():
@@ -99,19 +92,22 @@ class Graph:
     def info_graph(self) -> str:
         seq_degrees = self.get_sequence_degrees()
         count_seq_degrees: int = 0
+        # seq_degrees_str: str = ""
 
         for i in seq_degrees:
-            count_seq_degrees += int(i)
+            count_seq_degrees += i
 
-        return "Número de vérices: " + self.vertexes.__sizeof__() + "\n" + \
-               "Número de arestas: " + ((self.vertexes.__sizeof__() + count_seq_degrees) / 2) + "\n" + \
-               "Sequência de graus: " + seq_degrees
+        return "Número de vérices: " + str(self.vertexes.__len__()) + "\n" + \
+               "Número de arestas: " + str(count_seq_degrees / 2) + "\n" + \
+               "Sequência de graus: " + str(seq_degrees.__str__())
 
     def get_sequence_degrees(self) -> List[int]:
         list_seq_degrees: List[int] = []
 
-        for vertex in self.vertexes:
-            list_seq_degrees.append(vertex.list_vertexes_adj.__sizeof__())
+        for key in self.vertexes.keys():
+            vertex = self.vertexes[key]
+
+            list_seq_degrees.append(vertex.dict_vertexes_adj.__len__())
 
         list_seq_degrees.sort()
 
@@ -119,24 +115,16 @@ class Graph:
 
 
 class Vertex:
-    def __init__(self, value: object):
-        self.value: object = value  # Store the value of the vertex
+    def __init__(self):
         self.distance_origin: int = 0  # Distance origin to the determined a vertex
         self.distance_final: int = 0  # Distance final to the determined a vertex
         self.color: ColorVertex = ColorVertex.WHITE  # Initialize vertex of checked
-        self.list_vertexes_adj: List[Vertex] = []  # Set vertex adjacent
+        self.dict_vertexes_adj: Dict = {}  # Set vertex adjacent
         self.parent: Vertex = None
 
-    def add_adjacent(self, vertex: "Vertex"):
-        if not self.is_contains(vertex):
-            self.list_vertexes_adj.append(vertex)
-
-    def is_contains(self, vertex_adj: "Vertex"):
-        for vertex in self.list_vertexes_adj:
-            if vertex.value == vertex_adj.value:
-                return True
-
-        return False
+    def add_adjacent(self, key):
+        if not (key in self.dict_vertexes_adj.keys()):
+            self.dict_vertexes_adj[key] = Vertex()
 
     def clear(self):
         self.color = ColorVertex.WHITE

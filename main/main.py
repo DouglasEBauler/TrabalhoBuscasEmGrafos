@@ -17,17 +17,21 @@ def fill_graph() -> Graph:
         except Exception:
             continue
         else:
-            vertex = g.add_vertex(Vertex(vertexes[0]))
-            vertex_adj = Vertex(vertexes[1])
+            vertexes[0] = vertexes[0].replace("\n", "")
+            vertexes[1] = vertexes[1].replace("\n", "")
 
-            vertex.add_adjacent(vertex_adj)
+            vertex_0 = g.add_vertex(vertexes[0])  # Add vertex in graph
+            vertex_1 = g.add_vertex(vertexes[1])
+
+            vertex_0.add_adjacent(vertexes[1])    # Add vertex adjacent in vertex
+            vertex_1.add_adjacent(vertexes[0])    # Add vertex adjacent in vertex
 
     return g
 
 
 def info_graph(g: Graph):
     try:
-        f = open("../question1/info_graph.txt", "r")
+        f = open("../question1/info_graph.txt", "w")
     except FileNotFoundError:
         f = open("../question1/info_graph.txt", "x")
 
