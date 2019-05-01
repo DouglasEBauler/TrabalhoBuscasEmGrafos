@@ -23,8 +23,8 @@ def fill_graph() -> Graph:
             vertex_0 = g.add_vertex(vertexes[0])  # Add vertex in graph
             vertex_1 = g.add_vertex(vertexes[1])
 
-            vertex_0.add_adjacent(vertexes[1])    # Add vertex adjacent in vertex
-            vertex_1.add_adjacent(vertexes[0])    # Add vertex adjacent in vertex
+            vertex_0.add_adjacent(vertexes[1])  # Add vertex adjacent in vertex
+            vertex_1.add_adjacent(vertexes[0])  # Add vertex adjacent in vertex
 
     return g
 
@@ -43,3 +43,10 @@ if __name__ == '__main__':
     graph = fill_graph()
 
     info_graph(graph)
+
+    option = input("Como deseja representar o grafo?(1 = lista de ajdjacência, 2 = matriz) \n")
+
+    if option == "1":
+        print(graph.print_list_adjacent_graph())
+    elif option == "2":
+        print(graph.adjacency_matrix())

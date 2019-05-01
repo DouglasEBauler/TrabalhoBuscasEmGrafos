@@ -1,3 +1,4 @@
+# coding: utf-8
 from queue import Queue, Empty
 from typing import Dict, List
 from enum import Enum
@@ -75,19 +76,38 @@ class Graph:
     def print_list_adjacent_graph(self) -> str:
         list_adjacent_graph: str = ""
 
-        for vertex in self.vertexes:
+        for key in self.vertexes.keys():
+            vertex = self.vertexes[key]
             list_adjacent_vertex = ""
-            list_adjacent_vertex += vertex.value
+            list_adjacent_vertex += str(key)
 
-            for vertex_adj in vertex.list_vertexes_adj:
+            for key_adj in vertex.dict_vertexes_adj.keys():
                 if list_adjacent_vertex != "":
                     list_adjacent_vertex += " -> "
 
-                list_adjacent_vertex += "[ " + vertex_adj.value + " ] "
+                list_adjacent_vertex += "[ " + key_adj + " ] "
 
             list_adjacent_graph += list_adjacent_vertex + "\n"
 
         return list_adjacent_graph
+
+    def adjacency_matrix(self):
+        if len(self.vertexes) >= 1:
+            import numpy as np
+
+            list_vertexes = sorted(self.vertexes.keys())
+            adjacency_matrix = np.zeros(shape=(len(self.vertexes), len(self.vertexes)))
+
+            for i in range(len(list_vertexes)):
+                vertex_i = self.vertexes[list_vertexes[i]]
+
+                for j in range(i, len(list_vertexes)):
+                    vertex_j = self.vertexes[list_vertexes[j]]
+
+                    if vertex_j in vertex_i.dict_vertexes_adj.keys():
+                        adjacency_matrix[i, j] = 1
+
+            return adjacency_matrix
 
     def info_graph(self) -> str:
         seq_degrees = self.get_sequence_degrees()
@@ -98,7 +118,7 @@ class Graph:
             count_seq_degrees += i
 
         return "Número de vérices: " + str(self.vertexes.__len__()) + "\n" + \
-               "Número de arestas: " + str(count_seq_degrees / 2) + "\n" + \
+               "Número de arestas: " + str(int(count_seq_degrees / 2)) + "\n" + \
                "Sequência de graus: " + str(seq_degrees.__str__())
 
     def get_sequence_degrees(self) -> List[int]:
