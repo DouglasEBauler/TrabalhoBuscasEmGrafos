@@ -91,6 +91,15 @@ class Graph:
 
         return list_adjacent_graph
 
+    def count_adjacency_by_vertex(self, vertex_i_key, vertex_key_j):
+        count_vertex: int = 0
+
+        for key in self.vertexes[vertex_i_key].dict_vertexes_adj.keys():
+            if vertex_key_j == key:
+                count_vertex += 1
+
+        return count_vertex
+
     def adjacency_matrix(self):
         if len(self.vertexes) >= 1:
             import numpy as np
@@ -99,13 +108,8 @@ class Graph:
             adjacency_matrix = np.zeros(shape=(len(self.vertexes), len(self.vertexes)))
 
             for i in range(len(list_vertexes)):
-                vertex_i = self.vertexes[list_vertexes[i]]
-
-                for j in range(i, len(list_vertexes)):
-                    vertex_j = self.vertexes[list_vertexes[j]]
-
-                    if vertex_j in vertex_i.dict_vertexes_adj.keys():
-                        adjacency_matrix[i, j] = 1
+                for j in range(len(list_vertexes)):
+                    adjacency_matrix[i, j] = self.count_adjacency_by_vertex(list_vertexes[i], list_vertexes[j])
 
             return adjacency_matrix
 
