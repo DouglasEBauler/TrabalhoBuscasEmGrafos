@@ -33,7 +33,7 @@ def fill_graph(file_name: str) -> Graph:
 
 def info_graph(g: Graph, file_name: str):
     try:
-        f = open(file_name, "w")
+        f = open(file_name, "a")
     except FileNotFoundError:
         f = open(file_name, "x")
 
@@ -62,7 +62,7 @@ def tree_graph(g: Graph, type_search: str, file_name: str):
             tree_str += "Level: " + str(vertex.distance_origin) + " ]"
 
     try:
-        f = open(file_name, "w")
+        f = open(file_name, "a")
     except FileNotFoundError:
         f = open(file_name, "x")
 
