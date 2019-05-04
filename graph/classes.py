@@ -1,5 +1,4 @@
 # coding: utf-8
-from queue import Queue, Empty
 from typing import Dict, List
 from enum import Enum
 
@@ -10,102 +9,71 @@ class ColorVertex(Enum):
     BLACK = 2
 
 
+class Vertex:
+    def __init__(self, name):
+        self.name = name
+        self.neighbors: List = []
+        self.distance_origin: int = 0  # Distance origin to the determined a vertex
+        self.distance_final: int = 0  # Distance final to the determined a vertex
+        self.color: ColorVertex = ColorVertex.WHITE  # Initialize vertex of checked
+        self.parent: Vertex = None
+
+    def add_neighbor(self, v: "Vertex"):
+        n_set = set(self.neighbors)
+
+        if v not in n_set:
+            self.neighbors.append(v)
+            self.neighbors.sort()
+
+    def clear(self):
+        self.distance_origin = 0
+        self.distance_final = 0
+        self.color = ColorVertex.WHITE
+        self.parent = None
+
+
 class Graph:
     def __init__(self):
-        self.vertexes: Dict = {}  # Store the vertexes.
-        self.queue: Queue = Queue()
-        self.time = 0
+        self.vertex_list: Dict = {}  # Store the vertexes.
 
-    def add_vertex(self, key) -> "Vertex":
-        if not (key in self.vertexes.keys()):
-            self.vertexes[key] = Vertex()
+    def clear_vertexes(self):
+        for key in self.vertex_list:
+            self.vertex_list[key].clear()
 
-        return self.vertexes[key]
+    def add_vertex(self, vertex: Vertex):
+        if vertex.name not in self.vertex_list:
+            self.vertex_list[vertex.name] = vertex
 
-    def clear_queue(self):
-        while not self.queue.empty():
-            try:
-                self.queue.get(False)
-            except Empty:
-                continue
+    def add_edge(self, u, v):
+        if u in self.vertex_list and v in self.vertex_list:
+            self.vertex_list[u].add_neighbor(v)
+            self.vertex_list[v].add_neighbor(u)
 
-            self.queue.task_done()
+    def list_adjacent_graph(self) -> str:
+        list_adjacent_str: str = ""
+        for key in sorted(self.vertex_list.keys()):
+            if list_adjacent_str != "":
+                list_adjacent_str += "\n"
 
-    def internal_dfs(self, vertex: "Vertex"):
-        vertex.color = ColorVertex.SILVER
-        self.time += self.time
-        vertex.distance_origin = self.time
+            list_adjacent_str += key + " -> " + str(self.vertex_list[key].neighbors)
 
-        for v_adj in vertex.adjacent:
-            if v_adj.color == ColorVertex.WHITE:
-                self.internal_dfs(v_adj)
+        return list_adjacent_str
 
-        vertex.color = ColorVertex.BLACK
-        self.time += self.time
-        vertex.distance_final = self.time
-
-    def dfs(self):
-        self.time = 0
-
-        for v in self.vertexes:
-            if v.color == ColorVertex.WHITE:
-                self.internal_dfs()
-
-    def bfs(self, vertex_origin: "Vertex"):
-        for vertex in self.vertexes:
-            vertex.clear()
-
-        vertex_origin.distance_origin = 0
-        vertex_origin.color = ColorVertex.SILVER
-        self.clear_queue()
-
-        self.queue.put(vertex_origin)
-
-        while not self.queue.empty():
-            vertex_q = Vertex(self.queue.get())
-
-            for vertex in vertex_q.list_vertexes_adj:
-                if vertex.color == ColorVertex.WHITE:
-                    self.insert_queue()
-                    vertex.color = ColorVertex.SILVER
-                    vertex.parent = vertex_q
-                    vertex.distance_origin = vertex_q.distance_origin + 1
-
-            vertex_q.color = ColorVertex.BLACK
-
-    def print_list_adjacent_graph(self) -> str:
-        list_adjacent_graph: str = ""
-
-        for key in self.vertexes.keys():
-            vertex = self.vertexes[key]
-            list_adjacent_vertex = ""
-            list_adjacent_vertex += str(key)
-
-            for key_adj in vertex.dict_vertexes_adj.keys():
-                if list_adjacent_vertex != "":
-                    list_adjacent_vertex += " -> "
-
-                list_adjacent_vertex += "[ " + key_adj + " ] "
-
-            list_adjacent_graph += list_adjacent_vertex + "\n"
-
-        return list_adjacent_graph
-
-    def count_adjacency_by_vertex(self, vertex_i_key, vertex_key_j):
+    def count_adjacency_by_vertex(self, vertex_name_i, vertex_name_j):
         count_vertex: int = 0
 
-        for key in self.vertexes[vertex_i_key].dict_vertexes_adj.keys():
-            if vertex_key_j == key:
+        for vertex in self.vertex_list[vertex_name_i].neighbors:
+            if vertex_name_j == vertex.name:
                 count_vertex += 1
 
         return count_vertex
 
     def adjacency_matrix(self):
-        if len(self.vertexes) >= 1:
+        if len(self.vertex_list) >= 1:
             import numpy as np
 
-            list_vertexes = sorted(self.vertexes.keys())
-            adjacency_matrix = np.zeros(shape=(len(self.vertexes), len(self.vertexes)))
+            list_vertexes = sorted(self.vertex_list.keys())
+            adjacency_matrix = np.zeros(shape=(len(self.vertex_list), len(self.vertex_list)), dtype=int)
 
             for i in range(len(list_vertexes)):
                 for j in range(len(list_vertexes)):
@@ -113,45 +81,68 @@ class Graph:
 
             return adjacency_matrix
 
-    def info_graph(self) -> str:
-        seq_degrees = self.get_sequence_degrees()
-        count_seq_degrees: int = 0
-        # seq_degrees_str: str = ""
+    def dfs_visit(self, vertex: Vertex):
+        global time
+        vertex.color = ColorVertex.SILVER
+        vertex.distance_origin = time
+        time += 1
 
-        for i in seq_degrees:
-            count_seq_degrees += i
+        for v in vertex.neighbors:
+            if self.vertex_list[v].color == ColorVertex.WHITE:
+                self.vertex_list[v].parent = vertex
+                self.dfs_visit(self.vertex_list[v])
 
-        return "Número de vérices: " + str(self.vertexes.__len__()) + "\n" + \
-               "Número de arestas: " + str(int(count_seq_degrees / 2)) + "\n" + \
-               "Sequência de graus: " + str(seq_degrees.__str__())
+        vertex.color = ColorVertex.BLACK
+        vertex.distance_final = time
+        time += 1
+
+    def dfs(self, vertex):
+        global time
+        time = 1
+        self.clear_vertexes()
+
+        self.dfs_visit(vertex)
+
+    def bfs(self, vertex: Vertex):
+        self.clear_vertexes()
+        queue: List = []
+        vertex.distance_origin = 0
+        vertex.color = ColorVertex.SILVER
+
+        queue.append(vertex.name)
+        while len(queue) > 0:
+            u = queue.pop(0)
+            vertex_u = self.vertex_list[u]
+
+            for v in vertex_u.neighbors:
+                vertex_v = self.vertex_list[v]
+
+                if vertex_v.color == ColorVertex.WHITE:
+                    queue.append(v)
+
+                    vertex_v.color = ColorVertex.SILVER
+                    vertex_v.parent = vertex_u
+                    vertex_v.distance_origin = vertex_u.distance_origin + 1
+
+            vertex_u.color = ColorVertex.BLACK
 
     def get_sequence_degrees(self) -> List[int]:
         list_seq_degrees: List[int] = []
 
-        for key in self.vertexes.keys():
-            vertex = self.vertexes[key]
+        for key in self.vertex_list.keys():
+            vertex = self.vertex_list[key]
 
-            list_seq_degrees.append(vertex.dict_vertexes_adj.__len__())
+            list_seq_degrees.append(vertex.neighbors.__len__())
 
-        list_seq_degrees.sort()
+        return sorted(list_seq_degrees)
 
-        return list_seq_degrees
+    def info_graph(self) -> str:
+        seq_degrees = self.get_sequence_degrees()
+        count_seq_degrees: int = 0
 
+        for i in seq_degrees:
+            count_seq_degrees += i
 
-class Vertex:
-    def __init__(self):
-        self.distance_origin: int = 0  # Distance origin to the determined a vertex
-        self.distance_final: int = 0  # Distance final to the determined a vertex
-        self.color: ColorVertex = ColorVertex.WHITE  # Initialize vertex of checked
-        self.dict_vertexes_adj: Dict = {}  # Set vertex adjacent
-        self.parent: Vertex = None
-
-    def add_adjacent(self, key):
-        if not (key in self.dict_vertexes_adj.keys()):
-            self.dict_vertexes_adj[key] = Vertex()
-
-    def clear(self):
-        self.color = ColorVertex.WHITE
-        self.parent = None
-        self.distance_origin = 0
-        self.distance_final = 0
+        return "Número de vérices: " + str(self.vertex_list.__len__()) + "\n" + \
+               "Número de arestas: " + str(int(count_seq_degrees / 2)) + "\n" + \
+               "Sequência de graus: " + str(seq_degrees.__str__())
