@@ -66,6 +66,10 @@ def tree_graph(g: Graph, type_search: str, file_name: str):
     except FileNotFoundError:
         f = open(file_name, "x")
 
+    if type_search == "dfs":
+        f.write("----------Busca em profundidade---------- \n")
+    elif type_search == "bfs":
+        f.write("----------Busca em largura--------------- \n")
     f.write(tree_str)
-    f.write("")
+    f.write("\n \n")
     f.close()
