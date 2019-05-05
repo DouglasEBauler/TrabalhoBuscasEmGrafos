@@ -6,3 +6,11 @@ venv/
 graph/__pycache__/
 
 question_1/info_graph\.txt
+
+question_2/dengue_result\.txt
+
+question_2/dengue\.txt
+
+question_2/energy_result\.txt
+
+question_2/energy\.txt

@@ -13,8 +13,7 @@ class Vertex:
     def __init__(self, name):
         self.name = name
         self.neighbors: List = []
-        self.distance_origin: int = 0  # Distance origin to the determined a vertex
-        self.distance_final: int = 0  # Distance final to the determined a vertex
+        self.distance: int = 0  # Distance origin to the determined a vertex
         self.color: ColorVertex = ColorVertex.WHITE  # Initialize vertex of checked
         self.parent: Vertex = None
 
@@ -26,8 +25,7 @@ class Vertex:
             self.neighbors.sort()
 
     def clear(self):
-        self.distance_origin = 0
-        self.distance_final = 0
+        self.distance = 0
         self.color = ColorVertex.WHITE
         self.parent = None
 
@@ -81,32 +79,27 @@ class Graph:
 
             return adjacency_matrix
 
-    def dfs_visit(self, vertex: Vertex):
-        global time
-        vertex.color = ColorVertex.SILVER
-        vertex.distance_origin = time
-        time += 1
+    def dfs(self, vertex: Vertex) -> []:
+        stack = [vertex.name]
+        visited = set()
 
-        for v in vertex.neighbors:
-            if self.vertex_list[v].color == ColorVertex.WHITE:
-                self.vertex_list[v].parent = vertex
-                self.dfs_visit(self.vertex_list[v])
+        while stack:
+            v = self.vertex_list[stack.pop()]
 
-        vertex.color = ColorVertex.BLACK
-        vertex.distance_final = time
-        time += 1
+            if v.name in visited:
+                continue
 
-    def dfs(self, vertex):
-        global time
-        time = 1
-        self.clear_vertexes()
+            visited.add(v.name)
+            for w in reversed(v.neighbors):
+                if self.vertex_list[w].name not in visited:
+                    stack.append(w)
 
-        self.dfs_visit(vertex)
+        return visited
 
     def bfs(self, vertex: Vertex):
         self.clear_vertexes()
-        queue: List = []
-        vertex.distance_origin = 0
+        queue = []
+        vertex.distance = 0
         vertex.color = ColorVertex.SILVER
 
         queue.append(vertex.name)
@@ -122,7 +115,7 @@ class Graph:
 
                     vertex_v.color = ColorVertex.SILVER
                     vertex_v.parent = vertex_u
-                    vertex_v.distance_origin = vertex_u.distance_origin + 1
+                    vertex_v.distance = vertex_u.distance + 1
 
             vertex_u.color = ColorVertex.BLACK
 
