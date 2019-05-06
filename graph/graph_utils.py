@@ -48,6 +48,9 @@ def fill_graph(file_name: str) -> []:
             # Add edge
             g.add_edge(vertexes[0], vertexes[1])
 
+    if g not in list_graph:
+        list_graph.append(g)
+
     return list_graph
 
 

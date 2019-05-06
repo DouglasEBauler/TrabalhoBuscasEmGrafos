@@ -61,7 +61,7 @@ class Graph:
         count_vertex: int = 0
 
         for vertex in self.vertex_list[vertex_name_i].neighbors:
-            if vertex_name_j == vertex.name:
+            if vertex_name_j == vertex:
                 count_vertex += 1
 
         return count_vertex
