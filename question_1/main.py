@@ -18,3 +18,5 @@ if __name__ == '__main__':
         print(g.list_adjacent_graph())
     elif option == "2":
         print(g.adjacency_matrix())
+
+    endly = "End"
