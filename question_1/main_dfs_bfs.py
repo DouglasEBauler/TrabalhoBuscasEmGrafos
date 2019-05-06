@@ -10,7 +10,7 @@ if __name__ == '__main__':
     vertex_key = input("Informe o vértice inicial para realização das buscas: ")
     try:
         g = graph.pop()
-        queue = g.dfs(graph.vertex_list[vertex_key])
+        queue = g.dfs(g.vertex_list[vertex_key])
         tree_graph(graph, "dfs", "../question_1/info_graph.txt", queue)
 
         g.bfs(graph.vertex_list[vertex_key])
