@@ -1,5 +1,5 @@
 # coding: utf-8
-from graph.classes import Graph
+# author: Douglas Eduardo Bauler, Jefferson do Nascimento Júnior.
 from graph.graph_utils import fill_graph, tree_graph
 
 
