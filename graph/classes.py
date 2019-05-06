@@ -1,4 +1,5 @@
 # coding: utf-8
+# author: Douglas Eduardo Bauler, Jefferson do Nascimento Júnior.
 from typing import Dict, List
 from enum import Enum
 
