@@ -1,5 +1,6 @@
 # coding: utf-8
 # author: Douglas Eduardo Bauler, Jefferson do Nascimento Júnior.
+import sys
 from typing import Dict, List
 from enum import Enum
 
@@ -34,6 +35,8 @@ class Vertex:
 class Graph:
     def __init__(self):
         self.vertex_list: Dict = {}  # Store the vertexes.
+        self.edges: Dict = {}
+        self.destiny_vertex = ""
 
     def clear_vertexes(self):
         for key in self.vertex_list:
@@ -43,10 +46,12 @@ class Graph:
         if vertex.name not in self.vertex_list:
             self.vertex_list[vertex.name] = vertex
 
-    def add_edge(self, u, v):
+    def add_edge(self, u, v, value: int = 0):
         if u in self.vertex_list and v in self.vertex_list:
             self.vertex_list[u].add_neighbor(v)
             self.vertex_list[v].add_neighbor(u)
+
+            self.edges[u, v] = value
 
     def list_adjacent_graph(self) -> str:
         list_adjacent_str: str = ""
@@ -119,6 +124,33 @@ class Graph:
                     vertex_v.distance = vertex_u.distance + 1
 
             vertex_u.color = ColorVertex.BLACK
+
+    def dijsktra(self, v_initial: Vertex):
+        self.vertex_list[v_initial].distance = 0
+        self.vertex_list[v_initial].parent = None
+
+        for key in self.vertex_list.keys():
+            if not key == v_initial:
+                self.vertex_list[key].distance = sys.maxsize  # represent distance infinity
+                self.vertex_list[key].parent = None
+
+        queue_v_calculate = []
+        queue = self.vertex_list.copy()
+
+        while queue:
+            vertex = min([value for key, value in queue.items()], key=lambda vertex: vertex.distance)
+            del queue[vertex.name]
+            queue_v_calculate.append(vertex)
+
+            for v_adj in vertex.neighbors:
+                try:
+                    distance_edge = self.edges[(vertex.name, v_adj)]
+                except KeyError:
+                    distance_edge = self.edges[(v_adj, vertex.name)]
+
+                if self.vertex_list[v_adj].distance > vertex.distance + distance_edge:
+                    self.vertex_list[v_adj].distance = vertex.distance + distance_edge
+                    self.vertex_list[v_adj].parent = vertex
 
     def get_sequence_degrees(self) -> List[int]:
         list_seq_degrees: List[int] = []
