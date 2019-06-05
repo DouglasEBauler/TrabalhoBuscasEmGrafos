@@ -143,9 +143,9 @@ class Graph:
             queue_v_calculate.append(vertex)
 
             for v_adj in vertex.neighbors:
-                try:
+                if (vertex.name, v_adj) in self.edges:
                     distance_edge = self.edges[(vertex.name, v_adj)]
-                except KeyError:
+                else:
                     distance_edge = self.edges[(v_adj, vertex.name)]
 
                 if self.vertex_list[v_adj].distance > vertex.distance + distance_edge:
