@@ -151,24 +151,3 @@ class Graph:
                 if self.vertex_list[v_adj].distance > vertex.distance + distance_edge:
                     self.vertex_list[v_adj].distance = vertex.distance + distance_edge
                     self.vertex_list[v_adj].parent = vertex
-
-    def get_sequence_degrees(self) -> List[int]:
-        list_seq_degrees: List[int] = []
-
-        for key in self.vertex_list.keys():
-            vertex = self.vertex_list[key]
-
-            list_seq_degrees.append(vertex.neighbors.__len__())
-
-        return sorted(list_seq_degrees)
-
-    def info_graph(self) -> str:
-        seq_degrees = self.get_sequence_degrees()
-        count_seq_degrees: int = 0
-
-        for i in seq_degrees:
-            count_seq_degrees += i
-
-        return "Número de vérices: " + str(self.vertex_list.__len__()) + "\n" + \
-               "Número de arestas: " + str(int(count_seq_degrees / 2)) + "\n" + \
-               "Sequência de graus: " + str(seq_degrees.__str__())

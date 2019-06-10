@@ -1,101 +1,57 @@
-# coding: utf-8
-# author: Douglas Eduardo Bauler, Jefferson do Nascimento Júnior.
-from graph.classes import Graph, Vertex, ColorVertex
+from time import time
+from question_2.graph import Graph
 
 
-def fill_graph_list(file_name: str) -> []:
+def print_matrix(g):
+    for vertice in g.graph.items():
+        print(vertice)
+
+
+def fill_graph(file_name: str):
     f = open(file_name, "r")
 
     if f.__sizeof__() == 0:
         raise FileExistsError("Arquivo do grafo não está preenchido")
 
-    list_graph = []
-    count_edges: int = 0
-    g = None
+    g = Graph()
 
     for line in f:
-        if line.replace("\n", "") == "0 0":
-            break
+        line = line.replace("\n", "")
+        values = line.split(" ", 2)
 
-        if count_edges == 0:
-            params = line.split(" ", 1)
+        # Add edge
+        g.add_edge(values[0], (values[1], int(values[2])))
 
-            params[0] = params[0].replace("\n", "")
-            params[1] = params[1].replace("\n", "")
-
-            count_edges = int(params[1])
-            count_vertex = int(params[0])+1
-            vertexes_list = sorted([str(i) for i in range(1, count_vertex)])
-        else:
-            if g is None:
-                g = Graph()
-
-            while vertexes_list:
-                g.add_vertex(Vertex(vertexes_list.pop(0)))
-
-            if count_edges > 0:
-                vertexes = line.split(" ", 1)
-
-                vertexes[0] = vertexes[0].replace("\n", "")
-                vertexes[1] = vertexes[1].replace("\n", "")
-
-                # Add edge
-                if vertexes[0] in g.vertex_list and vertexes[1] in g.vertex_list:
-                    g.add_edge(vertexes[0], vertexes[1])
-
-                count_edges -= 1
-                if count_edges == 0:
-                    list_graph.append(g)
-                    g = None
-            else:
-                list_graph.append(g)
-                g = None
-
-    return list_graph
+    return g
 
 
-def print_result(test_list: {}):
-    try:
-        f = open("../question_2/energy_result.txt", "w")
-    except FileNotFoundError:
-        f = open("../question_2/dengue_result.txt", "x")
+def main():
+    g = fill_graph("../question_2/input.txt")
+    g.dfs(0)
+    print("Vértices de grau impar: ", g.impares)
 
-    for key, value in test_list.items():
-        f.write("Teste " + str(key) + "\n")
-        if value:
-            f.write("falha \n")
-        else:
-            f.write("normal \n")
+    odds_v = Graph()  # Grafo dos vértices de grau ímpar
 
-        f.write("\n")
+    for i in g.impares:
+        linha = g.dijkstra(i)
+        for j in g.impares:
+            odds_v.add_edge(i, (j, linha[j]))
 
-    f.close()
+    print("Menores caminhos entre os vértices de grau ímpar:\n")
+    print_matrix(odds_v)
+
+    print("Grafo com as arestas duplicadas:\n")
+    print_matrix(g)
+
+    if not g.is_connected(0):
+        if g.euleriano():
+            cycle, cust = g.fleury("0")
+            print(cycle)
+            print(cust)
 
 
 if __name__ == '__main__':
-    graph = fill_graph_list("../question_2/energy.txt")
-
-    graph_test_dfs = {
-        "1": False,
-        "2": False
-    }
-
-    g_list_key: int = 1
-    fail: bool = False
-    visited = []
-
-    while graph:
-        g: Graph = graph.pop(0)
-        for v in sorted(g.vertex_list):
-            visited = g.dfs(g.vertex_list[v])
-            break
-
-        for v in g.vertex_list:
-            if v not in visited:
-                fail = True
-                break
-
-        graph_test_dfs[str(g_list_key)] = fail
-        g_list_key += 1
-
-    print_result(graph_test_dfs)
+    t = time()
+    main()
+    t = (time() - t) / 1000
+    print('Tempo de execução: {}ms'.format(t))
