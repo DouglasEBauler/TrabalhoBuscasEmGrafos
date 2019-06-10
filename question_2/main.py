@@ -1,3 +1,5 @@
+# coding: utf-8
+# author: Douglas Eduardo Bauler, Jefferson do Nascimento Júnior.
 from time import time
 from question_2.graph import Graph
 
